@@ -1,7 +1,3 @@
-Here's a README template for the **leds-conectafapes-testai** (BDD (Gherkin) generator with AI) project in English:
-
----
-
 # leds-conectafapes-testai
 
 **leds-conectafapes-testai** is a tool designed to automatically generate BDD (Behavior-Driven Development) test scenarios in Gherkin format, leveraging AI for intelligent scenario generation. This project integrates with FastAPI and Docker to streamline the creation of `.feature` files for your test automation needs.
