@@ -1,8 +1,9 @@
 from crewai import LLM, Agent, Task
 import os
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from dotenv import load_dotenv
+from yaml import safe_load
 
 load_dotenv()
 
@@ -83,6 +84,7 @@ def init_task(
     converter_cls = None,
     callback = None
 ) -> Task:
+    bind_output_example(task_profile["description"], task_profile["output_example"])
     return Task(
         description = task_profile["description"],
         expected_output = task_profile["expected_output"],
@@ -98,3 +100,24 @@ def init_task(
         converter_cls = converter_cls,
         callback = callback
     )
+
+def bind_output_example(*tasks) -> None:
+    print(tasks)
+    #task["description"] = task["description"] + task["output_example"]
+
+def read_yaml_strings() -> Tuple[Dict[str, str], Dict[str, str]]:
+    with open("src/config/agents.yaml", encoding="utf-8") as file:
+        agents_yaml = safe_load(file)
+
+    with open("src/config/tasks.yaml", encoding="utf-8") as file:
+        tasks_yaml = safe_load(file)
+    
+    with open("src/config/output_examples.yaml") as file:
+        output_yaml = safe_load(file)
+
+    return agents_yaml, tasks_yaml, output_yaml
+
+# def init_crew(agents, tasks):
+#     print(agents, tasks)
+
+#print(os.getcwd())
