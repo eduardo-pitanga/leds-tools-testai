@@ -1,15 +1,18 @@
-import yaml
 import os
 from src.domain.entities.agent import Agent
 from src.domain.entities.llm import llm
 
-class AgentYAMLLoader():
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+class AgentLoader():
+    def __init__(self):
+        pass
 
-    def load_agents(self) -> list[Agent]:
-        with open(self.file_path, 'r', encoding='utf-8') as f:
-            data = yaml.safe_load(f)
+    def load_agents(self, agents_dict: dict) -> list[Agent]:
+        """
+        Load agents from a dictionary instead of a YAML file.
+
+        :param agents_dict: Dictionary containing agent configurations.
+        :return: List of Agent objects.
+        """
         return [
             Agent(
                 name=agent_name,
@@ -36,5 +39,5 @@ class AgentYAMLLoader():
                 respect_context_window=True,
                 code_execution_mode="default"
             )
-            for agent_name, agent_data in data.items()
+            for agent_name, agent_data in agents_dict.items()
         ]
