@@ -16,7 +16,7 @@ def init_llm(
         model: str ='gemini/gemini-1.5-flash',
         temp: float = 0.0,
         key: str = os.getenv("GOOGLE_API_KEY")
-) -> LLM:    
+) -> LLM:
     return LLM(
         model=model,
         temperature=temp,
