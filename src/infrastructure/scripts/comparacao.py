@@ -4,20 +4,14 @@ import os
 import strip_markdown
 import json
 from dotenv import load_dotenv
+from infrastructure.repositories.data_loader import load_json
+from application.use_cases.send_prompt import send_to_debate_api, send_to_sequencial_api
+import streamlit as st
 
 load_dotenv()
 
 arquivo = open("data.json", "r", encoding="utf-8")
-data_json = json.loads(arquivo.read())
-
-def send_message_to_api_debate():
-    result = requests.post("http://127.0.0.1:8080/gherkin", json=data_json)
-    return strip_markdown.strip_markdown(result.content.decode("utf-8"))
-
-def send_message_to_api_sequencial():
-    result = requests.post('http://127.0.0.1:8000/gherkin', json=data_json)
-    return strip_markdown.strip_markdown(result.content.decode("utf-8"))
-
+data_json = load_json("data.json")
 
 # Função para exibir o histórico da conversa
 def display_chat_history(messages, column):

@@ -8,4 +8,12 @@ class TaskYAMLLoader:
     def load_tasks(self) -> list[Task]:
         with open(self.file_path, 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f)
-        return [Task(task["name"], task["steps"]) for task in data.get("tasks", [])]
+        return [
+            Task(
+                name=task_name,
+                description=task_data["description"],
+                expected_output=task_data["expected_output"],
+                output_example=task_data.get("output_example")
+            )
+            for task_name, task_data in data.items()
+        ]
