@@ -1,6 +1,6 @@
 import os
 from src.domain.entities.agent import Agent
-from src.domain.entities.llm import llm
+from src.infrastructure.loaders.llm_loader import LLM_Loader
 
 class AgentLoader():
     def __init__(self):
@@ -19,7 +19,7 @@ class AgentLoader():
                 role=agent_data["role"],
                 goal=agent_data["goal"],
                 backstory=agent_data["backstory"],
-                llm=llm(model="gpt-4", temperature=0.0, api_key=(os.getenv("GOOGLE_API_KEY"))),
+                llm= LLM_Loader.load_from_params(),
                 config=None,
                 cache=False,
                 verbose=False,
