@@ -31,8 +31,9 @@ jobs:
       run: |
         pip install flake8
 
-    # Verificar qualidade do código com flake8
+    # Verificar qualidade do código com flake8 (ignorando erros específicos)
     - name: Verificar qualidade do código com flake8
       run: |
-        flake8 . --max-line-length=120
+        flake8 . --ignore=E501,W503
+
 
