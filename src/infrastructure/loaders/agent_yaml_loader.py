@@ -1,12 +1,11 @@
 import os
 from src.domain.entities.agent import Agent
 from src.infrastructure.loaders.llm_loader import LLM_Loader
+from src.domain.entities.llm import llm
 
 class AgentLoader():
-    def __init__(self):
-        pass
-
-    def load_agents(self, agents_dict: dict) -> list[Agent]:
+    
+    def load_agents(agent_dict: dict, llm: llm) -> list[Agent]:
         """
         Load agents from a dictionary instead of a YAML file.
 
@@ -15,11 +14,11 @@ class AgentLoader():
         """
         return [
             Agent(
-                name=agent_name,
-                role=agent_data["role"],
-                goal=agent_data["goal"],
-                backstory=agent_data["backstory"],
-                llm= LLM_Loader.load_from_params(),
+                name=agent_dict.get("name", "agent"),
+                role=agent_dict["role"],
+                goal=agent_dict["goal"],
+                backstory=agent_dict["backstory"],
+                llm=llm,
                 config=None,
                 cache=False,
                 verbose=False,
@@ -39,5 +38,5 @@ class AgentLoader():
                 respect_context_window=True,
                 code_execution_mode="default"
             )
-            for agent_name, agent_data in agents_dict.items()
+            #for agent_name, agent_data in agents_dict.items()
         ]

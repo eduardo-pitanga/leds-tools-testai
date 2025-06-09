@@ -1,0 +1,20 @@
+Funcionalidade: Login de Usuário
+
+Como um usuário do sistema  
+Quero poder fazer login com meu e-mail e senha  
+Para acessar minha conta e recursos protegidos
+
+Cenário: Login com credenciais válidas  
+Dado que o usuário está na página de login  
+E preenche o campo de e-mail com "usuario@exemplo.com"  
+E preenche o campo de senha com "senha123"  
+Quando o usuário clica no botão "Entrar"  
+Então o sistema deve redirecionar o usuário para a página inicial  
+E exibir a mensagem "Login realizado com sucesso"
+
+Cenário: Login com senha incorreta  
+Dado que o usuário está na página de login  
+E preenche o campo de e-mail com "usuario@exemplo.com"  
+E preenche o campo de senha com "senha_errada"  
+Quando o usuário clica no botão "Entrar"  
+Então o sistema deve exibir a mensagem de erro "Credenciais inválidas"
