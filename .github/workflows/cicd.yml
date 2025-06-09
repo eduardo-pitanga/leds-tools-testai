@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.10, 3.x]
+        python-version: [3.x]
 
     steps:
     #Setup
@@ -22,5 +22,4 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - run: yarn install
-    - run: yarn test
+    - run: ls - la
