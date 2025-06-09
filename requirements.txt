@@ -3,3 +3,4 @@ crewai[tools]
 fastapi
 uvicorn
 uuid
+pytest==7.1.2
