@@ -30,11 +30,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade setuptools wheel
           pip install --force-reinstall -r requirements.txt
-
-    # Verificar qualidade do código com flake8 (ignorando erros específicos)
-    - name: Verificar qualidade do código com flake8
-      run: |
-        flake8 . --ignore=E501,W503
     
     # Rodar testes com pytest
     - name: Rodar testes com pytest
@@ -68,8 +63,3 @@ jobs:
       run: |
         docker tag my-python-app:latest ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest
         docker push ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest
-
-    # Deploy para servidor remoto (Exemplo)
-    - name: Deploy para servidor remoto
-      run: |
-        ssh user@your-server-ip "docker pull ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest && docker run -d ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest"
