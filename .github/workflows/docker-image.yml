@@ -7,7 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  # CI - Testes e verificação
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,14 +27,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Instalar flake8 para verificar a qualidade do código
-    - name: Instalar flake8
+    # Rodar testes com pytest
+    - name: Rodar testes com pytest
       run: |
-        pip install flake8
-
-    # Verificar qualidade do código com flake8 (ignorando erros específicos)
-    - name: Verificar qualidade do código com flake8
-      run: |
-        flake8 . --ignore=E501,W503
-
+        pytest --maxfail=1 --disable-warnings -q
 
