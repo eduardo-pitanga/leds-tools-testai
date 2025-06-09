@@ -1,17 +1,26 @@
-#from crewai import Agent, Task, Crew, Process, LLM
-#import os
-from dotenv import load_dotenv
 #import json
-from src.domain.entities.agent import Agent
-from src.domain.entities.task import Task
-from src.domain.entities.llm import llm
+#import os
+from crewai import Agent, Task, Crew, Process, LLM
+from dotenv import load_dotenv
 from crewai import Crew, Process
 from typing import Dict, List
 from src.infrastructure.loaders.agent_yaml_loader import AgentLoader
 from src.infrastructure.loaders.llm_loader import LLM_Loader
 from src.infrastructure.loaders.task_yaml_loader import TaskLoader
+import os
+from dotenv import load_dotenv
 
-load_dotenv()
+# DEBUG DA API:
+# import litellm
+# litellm._turn_on_debug()  # Ativa debug
+# response = litellm.completion(
+#     model=os.getenv("LLM_MODEL"),  # "gemini/gemini-1.5-flash"
+#     messages=[{"role": "user", "content": "Olá, mundo!"}],
+#     api_key=os.getenv("GEMINI_API_KEY")  # Chave corrigida
+# )
+# print(response)
+
+load_dotenv() 
 
 def crew_gherkin(user_case: str, strings: Dict[str, str]) -> str:
     
@@ -55,9 +64,9 @@ def crew_gherkin(user_case: str, strings: Dict[str, str]) -> str:
     manager: Agent = AgentLoader.load_agents(agents_dict["manager_gherkin"], llm_low_temp)
     final_task: Task = TaskLoader.load_tasks(
         tasks_dict["manager_gherkin_task"],
-        output_file="features/ListarModalidadeFeature.feature",
         agent=manager,
         context=tasks[1::2],
+        output_file="features/ListarModalidadeFeature.feature",
     )
 
     crew: Crew = Crew(

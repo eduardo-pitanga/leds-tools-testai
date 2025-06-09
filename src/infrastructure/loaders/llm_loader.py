@@ -1,5 +1,5 @@
 import os
-from src.domain.entities.llm import llm
+from crewai import LLM
 
 class LLM_Loader:
     @staticmethod
@@ -7,7 +7,7 @@ class LLM_Loader:
         model: str = None,
         temp: float = None,
         api_key: str = None
-    ) -> llm:
+    ) -> LLM:
         """
         Carrega a entidade LLM a partir de parâmetros fornecidos ou das variáveis de ambiente.
 
@@ -20,7 +20,7 @@ class LLM_Loader:
         temp = temp if temp is not None else float(os.getenv("LLM_TEMPERATURE", 0.0))
         api_key = api_key or os.getenv("GOOGLE_API_KEY")
 
-        return llm(
+        return LLM(
             model=model,
             temp=temp,
             api_key=api_key
