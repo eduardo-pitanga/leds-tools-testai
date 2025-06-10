@@ -26,42 +26,18 @@ Annotations: Use Given, When, and Then annotations for test steps with explicit 
 
 Examples for Operations: Include robust examples for GET, POST, PUT, DELETE, and specific operations like activate and deactivate.
 Restrictions: Do not use Theory, InlineData, or Fact. All tests should focus on scenario-based behavior with clear steps.
-The DTO class you should use is: from pydantic import BaseModel
+The DTO class you should use is: ```python
+from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
-class ConectaFapes.Application.DTOs.CadastroModalidadesBolsas.Response.VersaoModalidadeResponseDTO(BaseModel):
+class ConectaFapes.Application.DTOs.CadastroModalidadesBolsas.Response.ModalidadeBolsaResponseDTO(BaseModel):
     id: str = None
     sigla: str = None
-    descricao: str = None
-    resolucao: Any = None
-    modalidadeBolsa: Any = None
-    versaoNiveis: List = None
-    requisitoBolsas: List = None
-    reducaoPorVinculo: float = None
-    dataInicioVigencia: datetime = None
-    dataFimVigencia: datetime = None
-    estado: Any = None
-    modalidadeBolsaCompativeis: List = None
+    nome: str = None
+    versaoModalidadesBolsas: List = None
 
-class ConectaFapes.Application.UseCases.CadastroModalidadesBolsas.VersaoModalidadeCases.Create.CreateVersaoModalidadeCommand(BaseModel):
-    resolucaoId: str = None
-    modalidadeBolsaId: str = None
-    sigla: str = None
-    reducaoPorVinculo: float = None
-    descricao: str = None
-    dataInicioVigencia: datetime = None
-    modalidadeBolsaCompativeis: List = None
-
-class ConectaFapes.Application.UseCases.CadastroModalidadesBolsas.VersaoModalidadeCases.Update.UpdateVersaoModalidadeCommand(BaseModel):
-    id: str = None
-    resolucaoId: str = None
-    modalidadeBolsaId: str = None
-    sigla: str = None
-    descricao: str = None
-    reducaoPorVinculo: float = None
-    dataInicioVigencia: datetime = None
-    modalidadeBolsaCompativeis: List = None
+```
 The url for this feature is GET /api/modalidadebolsa/versaomodalidadebolsa
 POST /api/modalidadebolsa/versaomodalidadebolsa
 GET /api/modalidadebolsa/versaomodalidadebolsa/{id}
