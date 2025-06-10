@@ -4,21 +4,21 @@ from crewai import Agent, Task, Crew, Process, LLM
 from dotenv import load_dotenv
 from crewai import Crew, Process
 from typing import Dict, List
-from src.infrastructure.loaders.agent_yaml_loader import AgentLoader
+from src.infrastructure.loaders.agent_loader import AgentLoader
 from src.infrastructure.loaders.llm_loader import LLM_Loader
 from src.infrastructure.loaders.task_yaml_loader import TaskLoader
 import os
 from dotenv import load_dotenv
 
 # DEBUG DA API:
-# import litellm
-# litellm._turn_on_debug()  # Ativa debug
-# response = litellm.completion(
+#import litellm
+#litellm._turn_on_debug()  # Ativa debug
+#response = litellm.completion(
 #     model=os.getenv("LLM_MODEL"),  # "gemini/gemini-1.5-flash"
 #     messages=[{"role": "user", "content": "Olá, mundo!"}],
 #     api_key=os.getenv("GEMINI_API_KEY")  # Chave corrigida
-# )
-# print(response)
+#)
+#print(response)
 
 load_dotenv() 
 
