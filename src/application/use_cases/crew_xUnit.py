@@ -7,6 +7,25 @@ from src.infrastructure.loaders.llm_loader import LLM_Loader
 from src.infrastructure.loaders.read_yaml import read_yaml_strings
 import asyncio
 import time
+import os
+
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+print("LLM_MODEL:", os.getenv("LLM_MODEL"))
+print("GEMINI_API_KEY:", os.getenv("GEMINI_API_KEY"))
+
+import litellm
+litellm._turn_on_debug()
+response = litellm.completion(
+    model=os.getenv("LLM_MODEL"),
+    messages=[{"role": "user", "content": "Olá, mundo!"}],
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+print(response)
 
 agents_dict, tasks_dict, outputs_dict = read_yaml_strings()
 
@@ -80,14 +99,14 @@ def info_gatherer_crew(feature: str) -> tuple[str, str]:
     )
 
     dto_file_find = Task(
-        description=f"{feature}\nAt the path /home/motora2/Documents/ifes/leds-tools-testai/dtos\nFind the dto request file and response file for the given feature,\nthe open the file and read it content\n",
+        description=f"{feature}\nAt the path C:/Users/vitor/OneDrive/Documentos/test-ia-dav/leds-tools-testai/dtos\nFind the dto request file and response file for the given feature,\nthe open the file and read it content\n",
         expected_output="The dto response and request class code",
         agent=agent_file_searcher,
         async_execution=True
     )
 
     api_url_find = Task(
-        description=f"{feature}\nRead the file at /home/motora2/Documents/ifes/leds-tools-testai/docs/endpoints.txt\nUse the tool to search for the api url for the given Feature;\nThe api_url has the feature title all in lower case;\nYou should look not only for the exact correspondence, but also for similars. For example, if the feature title in lowercase is versaomodalidade, you should also consider versaomodalidadebolsa\n",
+        description=f"{feature}\nRead the file at C:/Users/vitor/OneDrive/Documentos/test-ia-dav/leds-tools-testai/docs/endpoints.txt\nUse the tool to search for the api url for the given Feature;\nThe api_url has the feature title all in lower case;\nYou should look not only for the exact correspondence, but also for similars. For example, if the feature title in lowercase is versaomodalidade, you should also consider versaomodalidadebolsa\n",
         expected_output="Only the complete url path requested and the respective methods",
         agent=agent_api_finder,
     )
@@ -130,9 +149,6 @@ def crew_xunit_generation(feature: str, api_url, dto_code) -> Crew:
     xunit_code_proposal: Task = TaskLoader.load_tasks(
         xunit_code_proposal_dict,
         agent=csharp_xunit_writer_agent,
-        #tools=[]
-        #output_file=f"VersionarModalidadeTestImproved/rodada_{turn}.cs",
-        #context=[dto_file_find, api_url_find],
     )
 
     agents.append(csharp_xunit_writer_agent)    
@@ -143,7 +159,6 @@ def crew_xunit_generation(feature: str, api_url, dto_code) -> Crew:
         xunit_review_dict,
         xunit_code_reviewer_agent,
         context=[xunit_code_proposal],
-        #output_file=f"VersionarModalidadeTestImproved/revisao_{turn}.cs"
     )
 
     agents.append(xunit_code_reviewer_agent)
@@ -154,7 +169,6 @@ def crew_xunit_generation(feature: str, api_url, dto_code) -> Crew:
         tasks=tasks,
         max_rpm=10,
         output_log_file="crew_log.txt",
-        #manager_agent=manager_agent,
         manager_llm=llm_low_temp,
         process=Process.sequential,
         verbose=True
