@@ -30,6 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade setuptools wheel
           pip install --force-reinstall -r requirements.txt
+          pip install test-ai-leds
     
     # Rodar testes com pytest
     - name: Rodar testes com pytest
