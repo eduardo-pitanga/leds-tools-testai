@@ -1,0 +1,1 @@
+I need the actual list of files in the directory "C:/Users/vitor/OneDrive/Documentos/test-ia-dav/leds-tools-testai/dtos" to find the relevant DTO files.  I cannot provide the code without this information.

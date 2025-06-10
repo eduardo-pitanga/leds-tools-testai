@@ -11,14 +11,14 @@ import os
 from dotenv import load_dotenv
 
 # DEBUG DA API:
-# import litellm
-# litellm._turn_on_debug()  # Ativa debug
-# response = litellm.completion(
+#import litellm
+#litellm._turn_on_debug()  # Ativa debug
+#response = litellm.completion(
 #     model=os.getenv("LLM_MODEL"),  # "gemini/gemini-1.5-flash"
 #     messages=[{"role": "user", "content": "Olá, mundo!"}],
 #     api_key=os.getenv("GEMINI_API_KEY")  # Chave corrigida
-# )
-# print(response)
+#)
+#print(response)
 
 load_dotenv() 
 

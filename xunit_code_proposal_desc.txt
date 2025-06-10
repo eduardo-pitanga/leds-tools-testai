@@ -1,0 +1,142 @@
+Feature: Versionar Modalidade
+
+  Scenario: Usuário solicita a listagem das modalidades de bolsa disponíveis
+    Given o usuário está autenticado no sistema
+    When ele acessa o endpoint de modalidades de bolsa
+    Then o sistema retorna todas as modalidades de bolsa cadastradas
+
+Based on the feature described, write xUnit.net test code that adheres to the following guidelines:
+using ConectaFapes.Application.DTOs.CadastroModalidadesBolsas.Request;
+using ConectaFapes.Application.DTOs.CadastroModalidadesBolsas.Response;
+using ConectaFapes.Test.Shared;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+
+the path for the feature file should be: [FeatureFile("../../../Features/<feature title in pascal case>Feature.feature")]
+
+Consistency with HttpClient and WebApplicationFactory: Ensure consistent use of HttpClient and WebApplicationFactory throughout the test implementation.
+
+Validations: Implement validations to ensure:
+Request and response class names include the DTO suffix.
+Strings must not be null or empty; validate them before making any API call.
+Clear error messages are displayed in case of type mismatches or missing attributes.
+
+Annotations: Use Given, When, and Then annotations for test steps with explicit parameter binding.
+
+Examples for Operations: Include robust examples for GET, POST, PUT, DELETE, and specific operations like activate and deactivate.
+Restrictions: Do not use Theory, InlineData, or Fact. All tests should focus on scenario-based behavior with clear steps.
+The DTO class you should use is: I need the actual list of files in the directory "C:/Users/vitor/OneDrive/Documentos/test-ia-dav/leds-tools-testai/dtos" to find the relevant DTO files.  I cannot provide the code without this information.
+The url for this feature is I cannot find the API URL path because the specified file does not exist.
+Here is a sample output:
+
+using ConectaFapes.Application.DTOs.CadastroModalidadesBolsas.Request;
+using ConectaFapes.Application.DTOs.CadastroModalidadesBolsas.Response;
+using ConectaFapes.Test.Shared;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using Xunit.Gherkin.Quick;
+
+namespace ConectaFapes.Test.Steps
+{
+    [FeatureFile("../../../Features/modalidadebolsaFeature.feature")]
+    [Collection(WebApplicationFactoryParameters.CollectionName)]
+    public class ModalidadeBolsaStep : Xunit.Gherkin.Quick.Feature
+    {
+        private const string BASE_URL = "https://localhost:3000/api/modalidadebolsa/";
+        private readonly WebApplicationFactory _factory;
+        private readonly HttpClient _client;
+        private HttpResponseMessage? _response;
+        private ApiDataProvider _provider;
+
+        public ModalidadeBolsaStep(WebApplicationFactory factory)
+        {
+            _factory = factory;
+            _client = _factory.CreateClient(); // new HttpClient();
+            _provider = new ApiDataProvider(_client);
+        }
+
+        #region Check if API is running
+        [Given("I have access to the ModalidadeBolsa API")]
+        public async Task IHaveAccessAPI()
+        {
+            var response = await _client.GetAsync(BASE_URL);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+        #endregion
+
+        #region Retrieve Request
+        [When(@"I send a GET request to /modalidadebolsa/""(.+)""")]
+        public async Task WhenISendAGetRequest(string modalidadeBolsaId)
+        {
+            _response = await _client.GetAsync(BASE_URL + modalidadeBolsaId);
+        }
+        #endregion
+
+        #region Post Request
+        [When(@"I send a POST request to /modalidadebolsa with the following ModalidadeBolsa details: ""(.+)"", ""(.+)""")]
+        public async Task WhenISendAPostRequest(string sigla, string nome)
+        {
+            var modalidadeBolsa = new ModalidadeBolsaRequestDTO
+            {
+                Sigla = StringValidator.CheckEmptyString(sigla),
+                Nome = StringValidator.CheckEmptyString(nome)
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(modalidadeBolsa), Encoding.UTF8, "application/json");
+            _response = await _client.PostAsync(BASE_URL, content);
+        }
+        #endregion
+
+        #region Put Request
+        [When(@"I send a PUT request to /modalidadebolsa/""(.+)"" with the following ModalidadeBolsa details: ""(.+)"", ""(.+)""")]
+        public async Task WhenISendAPutRequest(string modalidadeBolsaId, string sigla, string nome)
+        {
+            ModalidadeBolsaResponseDTO modalidadeBolsa = await _provider.GetEntityById<ModalidadeBolsaResponseDTO>("ModalidadeBolsa", modalidadeBolsaId);
+
+            modalidadeBolsa.Sigla = StringValidator.CheckEmptyString(sigla);
+            modalidadeBolsa.Nome = StringValidator.CheckEmptyString(nome);
+
+            var content = new StringContent(JsonSerializer.Serialize(modalidadeBolsa), Encoding.UTF8, "application/json");
+            _response = await _client.PutAsync(BASE_URL + modalidadeBolsaId, content);
+        }
+        #endregion
+
+        #region Delete Request
+        [When(@"I send a DELETE request to /modalidadebolsa/""(.+)""")]
+        public async Task WhenISendADeleteRequest(string modalidadeBolsaId)
+        {
+            _response = await _client.DeleteAsync(BASE_URL + modalidadeBolsaId);
+        }
+        #endregion
+
+        #region Active Request
+        [When(@"I send a PUT request to /modalidadebolsa/""(.+)""/ativar")]
+        public async Task WhenISendAPutActiveRequest(string modalidadeBolsaId)
+        {
+            _response = await _client.PutAsync(BASE_URL + modalidadeBolsaId + "/ativar", null);
+        }
+        #endregion
+
+        #region Disable Request
+        [When(@"I send a PUT request to /modalidadebolsa/""(.+)""/desativar")]
+        public async Task WhenISendAPutDisableRequest(string modalidadeBolsaId)
+        {
+            _response = await _client.PutAsync(BASE_URL + modalidadeBolsaId + "/desativar", null);
+        }
+        #endregion
+
+        #region Check API Response
+        [Then(@"the API response should be: ""(.+)""")]
+        public void ThenApiResponse(string StatusCode)
+        {
+            if (_response != null)
+            {
+                Assert.Equal(Convert.ToInt32(StatusCode), (int)_response.StatusCode);
+            }
+        }
+        #endregion
+    }
+}
+

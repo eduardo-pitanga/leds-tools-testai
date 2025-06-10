@@ -1,47 +1,71 @@
 from crewai import Process, LLM, Task, Agent, Crew
 from crewai_tools import FileReadTool, DirectoryReadTool
 from typing import Dict, List
-from module import init_task, init_agent, init_llm, read_yaml_strings
+from src.infrastructure.loaders.task_yaml_loader import TaskLoader
+from src.infrastructure.loaders.agent_yaml_loader import AgentLoader
+from src.infrastructure.loaders.llm_loader import LLM_Loader
+from src.infrastructure.loaders.read_yaml import read_yaml_strings
 import asyncio
 import time
+import os
 
-llm_high_temp: LLM = init_llm(temp=0.8)
-llm_low_temp: LLM = init_llm()
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+print("LLM_MODEL:", os.getenv("LLM_MODEL"))
+print("GEMINI_API_KEY:", os.getenv("GEMINI_API_KEY"))
+
+import litellm
+litellm._turn_on_debug()
+response = litellm.completion(
+    model=os.getenv("LLM_MODEL"),
+    messages=[{"role": "user", "content": "Olá, mundo!"}],
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+print(response)
 
 agents_dict, tasks_dict, outputs_dict = read_yaml_strings()
 
+llm_high_temp: LLM = LLM_Loader.load_from_params(temp=0.8)
+llm_low_temp: LLM = LLM_Loader.load_from_params()
+
 def crew_xunit_debate(feature: str, strings: Dict[str, str]) -> str:
-    
-    agents_dict: Dict[str, str] = strings["agents"]
-    tasks_dict: Dict[str, str] = strings["tasks"]
-    
+    agents_dict = strings["agents"]
+    tasks_dict = strings["tasks"]
+
     tasks: List[Task] = []
     agents: List[Agent] = []
 
-    gemini_llm: LLM = init_llm(temp=0.2)
+    gemini_llm: LLM = LLM_Loader.load_from_params(temp=0.2)
 
-    csharp_xunit_writer_agent: Agent = init_agent(agents_dict["csharp_xunit_writer"], gemini_llm)
+    csharp_xunit_writer_agent: Agent = AgentLoader.load_agents(agents_dict["csharp_xunit_writer"], gemini_llm)
 
-    tasks_dict["xunit_code_proposal"]["description"] = tasks_dict["xunit_code_proposal"]["description"].format(feature=feature)
-    xunit_code_proposal: Task = init_task(tasks_dict["xunit_code_proposal"], agent=csharp_xunit_writer_agent)
-    
+    xunit_code_proposal_dict = tasks_dict["xunit_code_proposal"].copy()
+    xunit_code_proposal_dict["description"] = xunit_code_proposal_dict["description"].format(feature=feature)
+    xunit_code_proposal: Task = TaskLoader.load_tasks(xunit_code_proposal_dict, agent=csharp_xunit_writer_agent)
+
     agents.append(csharp_xunit_writer_agent)
     tasks.append(xunit_code_proposal)
 
-    for i in range(1,4):
-        xunit_solution_discussion_agent: Agent = init_agent(agents_dict["xunit_solution_discussion"], gemini_llm)
+    for i in range(1, 4):
+        xunit_solution_discussion_agent: Agent = AgentLoader.load_agents(agents_dict["xunit_solution_discussion"], gemini_llm)
 
-        tasks_dict["debate"]["description"] = tasks_dict["debate"]["description"].format(feature=feature)
-        debate: Task = init_task(tasks_dict["debate"], agent=xunit_solution_discussion_agent)
+        debate_dict = tasks_dict["debate"].copy()
+        debate_dict["description"] = debate_dict["description"].format(feature=feature)
+        debate: Task = TaskLoader.load_tasks(debate_dict, agent=xunit_solution_discussion_agent)
 
         agents.append(xunit_solution_discussion_agent)
         tasks.append(debate)
-    
-    result_analysis_manager_agent: Agent = init_agent(agents_dict["result_analysis_manager"], llm=gemini_llm)
 
-    tasks_dict["manager_xunit_task"]["description"] = tasks_dict["manager_xunit_task"]["description"].format(feature=feature)
-    manager_xunit_task: Task = init_task(
-        tasks_dict["manager_xunit_task"],
+    result_analysis_manager_agent: Agent = AgentLoader.load_agents(agents_dict["result_analysis_manager"], gemini_llm)
+
+    manager_xunit_task_dict = tasks_dict["manager_xunit_task"].copy()
+    manager_xunit_task_dict["description"] = manager_xunit_task_dict["description"].format(feature=feature)
+    manager_xunit_task: Task = TaskLoader.load_tasks(
+        manager_xunit_task_dict,
         output_file=f"modalidade_bolsa_crew.cs",
         agent=result_analysis_manager_agent,
         context=[tasks[-1]],
@@ -56,45 +80,33 @@ def crew_xunit_debate(feature: str, strings: Dict[str, str]) -> str:
 
     return crew.kickoff().raw
 
-
 def info_gatherer_crew(feature: str) -> tuple[str, str]:
     agent_api_finder = Agent(
-    role="API Path Finder",
-    goal="Identify and extract API URL paths from Swagger documents to streamline API integration and documentation.",
-    backstory="A meticulous and detail-oriented digital assistant, trained extensively in API documentation and Swagger standards. Equipped with a keen eye for structure and patterns, the agent thrives in simplifying complex API schemas for developers.",
-    llm=llm_low_temp,
-    verbose=True,
-    tools=[FileReadTool()],
+        role="API Path Finder",
+        goal="Identify and extract API URL paths from Swagger documents to streamline API integration and documentation.",
+        backstory="A meticulous and detail-oriented digital assistant, trained extensively in API documentation and Swagger standards. Equipped with a keen eye for structure and patterns, the agent thrives in simplifying complex API schemas for developers.",
+        llm=llm_low_temp,
+        verbose=True,
+        tools=[FileReadTool()],
     )
 
     agent_file_searcher = Agent(
-    role="File Search Specialist",
-    goal="Locate a specific file within a given directory and its subdirectories, ensuring efficient file retrieval for various tasks.",
-    backstory="A diligent and organized assistant, fine-tuned for file system navigation and pattern matching. With a background in file management and search optimization, this agent excels at quickly identifying files based on name, type, or content.",
-    llm=llm_low_temp,
-    tools=[DirectoryReadTool(), FileReadTool()]
+        role="File Search Specialist",
+        goal="Locate a specific file within a given directory and its subdirectories, ensuring efficient file retrieval for various tasks.",
+        backstory="A diligent and organized assistant, fine-tuned for file system navigation and pattern matching. With a background in file management and search optimization, this agent excels at quickly identifying files based on name, type, or content.",
+        llm=llm_low_temp,
+        tools=[DirectoryReadTool(), FileReadTool()]
     )
 
     dto_file_find = Task(
-        description=f"{feature}"
-        """At the path C:/Users/gabri/leds-conectafapes-backend-admin/src/ConectaFapes/ConectaFapes.Application/DTOs
-        Find the dto request file and response file for the given feature,
-        the open the file and read it content
-        """,
+        description=f"{feature}\nAt the path C:/Users/vitor/OneDrive/Documentos/test-ia-dav/leds-tools-testai/dtos\nFind the dto request file and response file for the given feature,\nthe open the file and read it content\n",
         expected_output="The dto response and request class code",
         agent=agent_file_searcher,
         async_execution=True
     )
 
-
     api_url_find = Task(
-        description=f"{feature}"
-        """
-        Read the file at C:/Users/gabri/crew2/endpoints.txt
-        Use the tool to search for the api url for the given Feature;
-        The api_url has the feature title all in lower case;
-        You should look not only for the exact correspondence, but also for similars. For example, if the feature title in lowercase is versaomodalidade, you should also consider versaomodalidadebolsa
-        """,
+        description=f"{feature}\nRead the file at C:/Users/vitor/OneDrive/Documentos/test-ia-dav/leds-tools-testai/docs/endpoints.txt\nUse the tool to search for the api url for the given Feature;\nThe api_url has the feature title all in lower case;\nYou should look not only for the exact correspondence, but also for similars. For example, if the feature title in lowercase is versaomodalidade, you should also consider versaomodalidadebolsa\n",
         expected_output="Only the complete url path requested and the respective methods",
         agent=agent_api_finder,
     )
@@ -114,43 +126,45 @@ def info_gatherer_crew(feature: str) -> tuple[str, str]:
     return dto_file_find.output.raw, api_url_find.output.raw
 
 def crew_xunit_generation(feature: str, api_url, dto_code) -> Crew:
-    gemini_llm: LLM = init_llm(temp=0.2)
+    gemini_llm: LLM = LLM_Loader.load_from_params(temp=0.2)
     agents: list[Agent] = []
     tasks: list[Task] = []
 
-    #bind das features e concantenacao com o output de exemplo
-    tasks_dict["xunit_code_proposal"]["description"] = \
-        tasks_dict["xunit_code_proposal"]["description"].format(feature=feature) + \
-        "The DTO class you should use is: " + dto_code + "\n" + \
-        "The url for this feature is " + api_url + "\n" +\
-        outputs_dict[tasks_dict["xunit_code_proposal"]["output_example"]]
-    
-    print(tasks_dict["xunit_code_proposal"]["description"], file=open("xunit_code_proposal_desc.txt", "w"))
+    xunit_code_proposal_dict = tasks_dict["xunit_code_proposal"].copy()
+    xunit_code_proposal_dict["description"] = (
+        xunit_code_proposal_dict["description"].format(feature=feature)
+        + "The DTO class you should use is: " + dto_code + "\n"
+        + "The url for this feature is " + api_url + "\n"
+        + outputs_dict[xunit_code_proposal_dict["output_example"]]
+    )
+    print(xunit_code_proposal_dict["description"], file=open("xunit_code_proposal_desc.txt", "w"))
 
-    tasks_dict["xunit_review"]["description"] = \
-        tasks_dict["xunit_review"]["description"].format(feature=feature) + \
-        outputs_dict[tasks_dict["xunit_review"]["output_example"]]
-    
-    csharp_xunit_writer_agent: Agent = init_agent(agents_dict["csharp_xunit_writer"], gemini_llm)
-    xunit_code_proposal: Task = init_task(
-        tasks_dict["xunit_code_proposal"],
+    xunit_review_dict = tasks_dict["xunit_review"].copy()
+    xunit_review_dict["description"] = (
+        xunit_review_dict["description"].format(feature=feature)
+        + outputs_dict[xunit_review_dict["output_example"]]
+    )
+
+    csharp_xunit_writer_agent: Agent = AgentLoader.load_agents(agents_dict["csharp_xunit_writer"], gemini_llm)
+    xunit_code_proposal: Task = TaskLoader.load_tasks(
+        xunit_code_proposal_dict,
         agent=csharp_xunit_writer_agent,
         #tools=[]
         #output_file=f"VersionarModalidadeTestImproved/rodada_{turn}.cs",
         #context=[dto_file_find, api_url_find],
-        )
-            
-    agents.append(csharp_xunit_writer_agent)
+    )
+
+    agents.append(csharp_xunit_writer_agent)    
     tasks.append(xunit_code_proposal)
 
-    xunit_code_reviewer_agent: Agent = init_agent(agents_dict["xunit_code_reviewer_agent"], gemini_llm)
-    xunit_code_review_task: Task = init_task(
-        tasks_dict["xunit_review"],
+    xunit_code_reviewer_agent: Agent = AgentLoader.load_agents(agents_dict["xunit_code_reviewer_agent"], gemini_llm)
+    xunit_code_review_task: Task = TaskLoader.load_tasks(
+        xunit_review_dict,
         xunit_code_reviewer_agent,
         context=[xunit_code_proposal],
         #output_file=f"VersionarModalidadeTestImproved/revisao_{turn}.cs"
-        )
-    
+    )
+
     agents.append(xunit_code_reviewer_agent)
     tasks.append(xunit_code_review_task)
 
@@ -163,21 +177,22 @@ def crew_xunit_generation(feature: str, api_url, dto_code) -> Crew:
         manager_llm=llm_low_temp,
         process=Process.sequential,
         verbose=True
-        )
+    )
 
 def manager_crew(reviews: tuple[str]) -> None:
-    tasks_dict["manager_xunit_task"]["description"] = \
-        tasks_dict["manager_xunit_task"]["description"].format(reviews[0], reviews[1], reviews[2]) + \
-        outputs_dict[tasks_dict["manager_xunit_task"]["output_example"]]
-    
-    print(tasks_dict["manager_xunit_task"]["description"], file=open("manager_xunit_task_desc.txt", "w"))
+    manager_xunit_task_dict = tasks_dict["manager_xunit_task"].copy()
+    manager_xunit_task_dict["description"] = (
+        manager_xunit_task_dict["description"].format(reviews[0], reviews[1], reviews[2])
+        + outputs_dict[manager_xunit_task_dict["output_example"]]
+    )
+    print(manager_xunit_task_dict["description"], file=open("manager_xunit_task_desc.txt", "w"))
 
-    manager: Agent = init_agent(agents_dict["result_analysis_manager"], llm_low_temp)
-    manager_task: Task = init_task(
-        tasks_dict["manager_xunit_task"],
-        manager, 
+    manager: Agent = AgentLoader.load_agents(agents_dict["result_analysis_manager"], llm_low_temp)
+    manager_task: Task = TaskLoader.load_tasks(
+        manager_xunit_task_dict,
+        manager,
         output_file="VersionarModalidadeStepAI.cs"
-        )
+    )
 
     crew = Crew(
         agents=[manager],
@@ -186,7 +201,6 @@ def manager_crew(reviews: tuple[str]) -> None:
     )
 
     return crew.kickoff()
-
 
 async def xunit_generation(feature):
     dto_code, api_url = info_gatherer_crew(feature)
@@ -198,11 +212,10 @@ async def xunit_generation(feature):
     results = await asyncio.gather(result1, result2, result3)
     return manager_crew(results)
 
-
-with open("src/features/VersaoModalidadeFeature.feature") as file:
-    feature = file.read()
-    start_time = time.time()
-    asyncio.run(xunit_generation(feature))
-    end_time = time.time()
-    print(f"Tempo de execução: {end_time-start_time}")
-    #crew_xunit_paralelo(feature)
+if __name__ == "__main__":
+    with open("src/features/teste.feature") as file:
+        feature = file.read()
+        start_time = time.time()
+        asyncio.run(xunit_generation(feature))
+        end_time = time.time()
+        print(f"Tempo de execução: {end_time-start_time}")
