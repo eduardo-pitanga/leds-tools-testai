@@ -4,7 +4,7 @@ from crewai import Agent, Task, Crew, Process, LLM
 from dotenv import load_dotenv
 from crewai import Crew, Process
 from typing import Dict, List
-from src.infrastructure.loaders.agent_yaml_loader import AgentLoader
+from src.infrastructure.loaders.agent_loader import AgentLoader
 from src.infrastructure.loaders.llm_loader import LLM_Loader
 from src.infrastructure.loaders.task_yaml_loader import TaskLoader
 import os

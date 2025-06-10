@@ -1,5 +1,5 @@
 from src.domain.entities.llm import llm
-from src.infrastructure.loaders.agent_yaml_loader import AgentLoader
+from src.infrastructure.loaders.agent_loader import AgentLoader
 from src.infrastructure.loaders.llm_loader import LLM_Loader 
 from typing import Dict, List
 
