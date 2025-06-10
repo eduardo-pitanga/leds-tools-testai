@@ -1,5 +1,0 @@
-GET /api/modalidadebolsa/versaomodalidadebolsa
-POST /api/modalidadebolsa/versaomodalidadebolsa
-GET /api/modalidadebolsa/versaomodalidadebolsa/{id}
-PUT /api/modalidadebolsa/versaomodalidadebolsa/{id}
-DELETE /api/modalidadebolsa/versaomodalidadebolsa/{id}
