@@ -36,7 +36,7 @@ jobs:
     # Rodar testes com pytest
     - name: Rodar testes com pytest
       run: |
-        PYTHONPATH=src pytest src/infrastructure/tests --maxfail=5 --disable-warnings --cov=src --cov-report=term
+          PYTHONPATH=$PWD pytest src/infrastructure/tests --cov=src
 
   # CD - Construção da imagem Docker e deploy
   cd:
