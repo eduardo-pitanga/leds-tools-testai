@@ -31,6 +31,7 @@ jobs:
           pip install --upgrade setuptools wheel
           pip install --force-reinstall -r requirements.txt
           pip install test-ai-leds
+          pip install pytest-cov
     
     # Rodar testes com pytest
     - name: Rodar testes com pytest

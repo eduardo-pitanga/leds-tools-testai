@@ -3,6 +3,6 @@ crewai[tools]
 fastapi
 uvicorn
 uuid
-pytest==7.1.2
+pytest-cov
 flake8==4.0.0
 entrypoints==0.3
