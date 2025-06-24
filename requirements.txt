@@ -3,3 +3,5 @@ crewai[tools]
 fastapi
 uvicorn
 uuid
+pytest-cov
+entrypoints==0.3
