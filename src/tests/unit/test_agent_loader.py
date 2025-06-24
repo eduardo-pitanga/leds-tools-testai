@@ -1,5 +1,5 @@
 import pytest
-from src.infrastructure.loaders.agent_yaml_loader import AgentLoader
+from src.infrastructure.loaders.agent_loader import AgentLoader
 from src.domain.entities.agent import Agent
 from src.domain.entities.llm import llm
 

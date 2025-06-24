@@ -1,4 +1,4 @@
-from crewai import Agent  # Troque para a classe do CrewAI
+from src.domain.entities.agent import Agent
 
 class AgentLoader():
     @staticmethod

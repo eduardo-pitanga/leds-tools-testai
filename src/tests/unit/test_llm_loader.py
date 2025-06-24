@@ -3,7 +3,7 @@ from src.infrastructure.loaders.llm_loader import LLM_Loader
 from src.domain.entities.llm import llm
 
 def test_llm_loader_default_env(monkeypatch):
-    # Se não passar nada, deve ler do env ou usar defaults
+    
     monkeypatch.setenv("LLM_MODEL", "env-model")
     monkeypatch.setenv("LLM_TEMPERATURE", "0.4")
     monkeypatch.setenv("GOOGLE_API_KEY", "env-key")
@@ -22,5 +22,5 @@ def test_llm_loader_with_params():
 
 def test_llm_loader_bad_temperature():
     with pytest.raises(ValueError):
-        # temp deve ser float convertível
+        
         LLM_Loader.load_from_params(temp="not-a-number")

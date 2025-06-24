@@ -1,12 +1,27 @@
 class Task:
-    def __init__(self, name: str, steps: list[str], task_profile: list[str], agent,
-    tools: list[str], async_execution: bool, context: str, config: str, output_json: str,output_pydantic: str, output_file: str, human_input: bool, converter_cls: str, callback: callable):
+    def __init__(
+        self,
+        name: str,
+        steps: list[str],
+        task_profile: list[str],
+        agent=None,
+        tools: list[str] = None,
+        async_execution: bool = False,
+        context: str = None,
+        config: str = None,
+        output_json: str = None,
+        output_pydantic: str = None,
+        output_file: str = None,
+        human_input: bool = False,
+        converter_cls: str = None,
+        callback: callable = None
+    ):
         self.name = name
         self.steps = steps
         self.description = task_profile
         self.expected_output = task_profile
         self.agent = agent
-        self.tools = tools
+        self.tools = tools if tools is not None else []
         self.async_execution = async_execution
         self.context = context
         self.config = config
