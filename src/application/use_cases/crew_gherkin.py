@@ -2,7 +2,6 @@
 #import os
 from crewai import Agent, Task, Crew, Process, LLM
 from dotenv import load_dotenv
-from crewai import Crew, Process
 from typing import Dict, List
 from src.infrastructure.loaders.agent_loader import AgentLoader
 from src.infrastructure.loaders.llm_loader import LLM_Loader
@@ -18,15 +17,14 @@ from dotenv import load_dotenv
 #     messages=[{"role": "user", "content": "Olá, mundo!"}],
 #     api_key=os.getenv("GEMINI_API_KEY")  # Chave corrigida
 #)
-#print(response)
+# print(response)
 
 load_dotenv() 
 
 def crew_gherkin(user_case: str, strings: Dict[str, str]) -> str:
     
-    llm_low_temp = LLM_Loader.load_from_params()
-    llm_high_temp = LLM_Loader.load_from_params(temp=0.6)
-
+    llm_low_temp: LLM = LLM_Loader.load_from_params()
+    llm_high_temp: LLM = LLM_Loader.load_from_params(temp=0.6)
     agents_dict: Dict[str, str] = strings["agents"]
     tasks_dict: Dict[str, str] = strings["tasks"]
     

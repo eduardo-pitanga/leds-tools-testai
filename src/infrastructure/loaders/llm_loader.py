@@ -1,5 +1,5 @@
 import os
-from src.domain.entities.llm import llm  
+from crewai import LLM
 
 class LLM_Loader:
     @staticmethod
@@ -7,7 +7,7 @@ class LLM_Loader:
         model: str = None,
         temp: float = None,
         api_key: str = None
-    ) -> llm:
+    ) -> LLM:
         """
         Carrega a entidade LLM a partir de parâmetros fornecidos ou das variáveis de ambiente.
 
@@ -25,8 +25,8 @@ class LLM_Loader:
         except Exception:
             raise ValueError("Temperature must be a float.")
 
-        return llm(
+        return LLM(
             model=model,
-            temp=temp,
+            temperature=temp,
             api_key=api_key
         )
