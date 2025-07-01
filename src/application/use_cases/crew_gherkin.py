@@ -10,6 +10,7 @@ from src.infrastructure.loaders.read_yaml import read_yaml_strings
 import asyncio
 import time
 
+#
 # DEBUG DA API:
 #import litellm
 #litellm._turn_on_debug()  # Ativa debug
