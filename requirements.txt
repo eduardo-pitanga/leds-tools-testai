@@ -4,5 +4,4 @@ fastapi
 uvicorn
 uuid
 pytest-cov
-flake8==4.0.0
 entrypoints==0.3
