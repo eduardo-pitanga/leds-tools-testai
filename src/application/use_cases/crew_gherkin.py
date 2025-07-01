@@ -76,7 +76,6 @@ def crew_gherkin(user_case: str, strings: Dict[str, str]) -> str:
         manager_llm=llm_low_temp,
         process=Process.sequential,
         verbose=True
-        
     )
     
     resultado = crew.kickoff()

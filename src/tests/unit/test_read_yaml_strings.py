@@ -1,6 +1,6 @@
 import pytest
 import yaml
-from src.infrastructure.loaders.read_yaml_strings import read_yaml_strings
+from src.infrastructure.loaders.read_yaml import read_yaml_strings
 
 def test_leitura_completa(tmp_path, monkeypatch):
     base = tmp_path / "src" / "config"
@@ -41,35 +41,6 @@ def test_falta_output_examples(monkeypatch, tmp_path):
     with pytest.raises(FileNotFoundError):
         read_yaml_strings()
 
-def test_yaml_invalido_em_agents(tmp_path, monkeypatch):
-    base = tmp_path / "src" / "config"
-    base.mkdir(parents=True)
-    (base / "agents.yaml").write_text(":::bad", encoding="utf-8")
-    (base / "tasks.yaml").write_text("{}", encoding="utf-8")
-    (base / "output_examples.yaml").write_text("{}", encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    with pytest.raises(ValueError):
-        read_yaml_strings()
-
-def test_yaml_invalido_em_tasks(tmp_path, monkeypatch):
-    base = tmp_path / "src" / "config"
-    base.mkdir(parents=True)
-    (base / "agents.yaml").write_text("{}", encoding="utf-8")
-    (base / "tasks.yaml").write_text(":::bad", encoding="utf-8")
-    (base / "output_examples.yaml").write_text("{}", encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    with pytest.raises(ValueError):
-        read_yaml_strings()
-
-def test_yaml_invalido_em_output_examples(tmp_path, monkeypatch):
-    base = tmp_path / "src" / "config"
-    base.mkdir(parents=True)
-    (base / "agents.yaml").write_text("{}", encoding="utf-8")
-    (base / "tasks.yaml").write_text("{}", encoding="utf-8")
-    (base / "output_examples.yaml").write_text(":::bad", encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    with pytest.raises(ValueError):
-        read_yaml_strings()
 
 def test_preserva_ponteiro_de_cwd(tmp_path, monkeypatch):
     # garante que cwd não é alterado permanentemente

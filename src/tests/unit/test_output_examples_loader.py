@@ -30,8 +30,11 @@ def test_carrega_estrutura_aninhada(tmp_path):
     assert load_output_examples(str(f)) == data
 
 def test_permissao_negada(monkeypatch):
+    def fake_open(*args, **kwargs):
+        raise PermissionError("Permissão negada ao abrir o arquivo")
+    monkeypatch.setattr("builtins.open", fake_open)
     with pytest.raises(PermissionError):
-        load_output_examples("/root/forbidden.yaml")
+        load_output_examples("qualquer_arquivo.yaml")
 
 def test_caminho_none():
     with pytest.raises(TypeError):

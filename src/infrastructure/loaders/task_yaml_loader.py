@@ -4,8 +4,6 @@ class TaskLoader:
     @staticmethod
     def load_tasks(task_dict: dict, agent=None, context=None, output_file=None) -> Task:
         task_kwargs = {
-            "name": task_dict.get("name", "task"),
-            "steps": task_dict.get("steps", []),
             "description": task_dict["description"],
             "expected_output": task_dict.get("expected_output", ""),
             "agent": agent,
