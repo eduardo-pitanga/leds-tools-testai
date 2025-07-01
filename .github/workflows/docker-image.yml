@@ -2,9 +2,9 @@ name: Test.AI CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "davi" ]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "davi" ]
 
 jobs:
   # CI - Testes e verificação
