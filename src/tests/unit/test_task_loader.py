@@ -56,6 +56,5 @@ def test_task_loader_output_file_opcional():
 
 def test_task_loader_tipo_errado(monkeypatch):
     td = {"description":"D7"}
-    # forçar TaskLoader a chamar algo errado, mas assume que Task aceita qualquer coisa
     t = TaskLoader.load_tasks(td)
     assert hasattr(t, "description")
