@@ -6,9 +6,9 @@ WORKDIR /app
 
 # Copy project files to the container
 COPY requirements.txt requirements.txt
-COPY api.py api.py
+COPY src/interface/api/ src/interface/api/ 
 # COPY api2.py api2.py
-COPY .env .env
+# COPY .env .env
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
